@@ -1,0 +1,105 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        xmlns:local="clr-namespace:FileReflection"
+        x:Class="FileReflection.MainWindow"
+        x:DataType="local:MainViewModel"
+        Title="FileReflection">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+            <Button Content="Copy" Command="{Binding CopyCommand}" Margin="5"/>
+            <Button Content="Move" Command="{Binding MoveCommand}" Margin="5"/>
+            <TextBlock Text="{Binding SelectedItemSize, StringFormat='Size: {0} bytes'}" Margin="5" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="Source" Margin="0,0,0,5"/>
+                <TreeView ItemsSource="{Binding FileSystemItems}" 
+                          SelectedItem="{Binding FirstSelectedItem, Mode=TwoWay}">
+                    <TreeView.DataTemplates>
+                        <TreeDataTemplate DataType="{x:Type local:FolderViewModel}" ItemsSource="{Binding Items}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </TreeDataTemplate>
+                        <DataTemplate DataType="{x:Type local:FileViewModel}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="5">
+                <TextBlock Text="Destination" Margin="0,0,0,5"/>
+                <TreeView ItemsSource="{Binding FileSystemItems}" 
+                          SelectedItem="{Binding SecondSelectedItem, Mode=TwoWay}">
+                    <TreeView.DataTemplates>
+                        <TreeDataTemplate DataType="{x:Type local:FolderViewModel}" ItemsSource="{Binding Items}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </TreeDataTemplate>
+                        <DataTemplate DataType="{x:Type local:FileViewModel}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Margin="5" Spacing="5">
+            <TextBlock Text="Reflection Demo" FontWeight="Bold" Margin="0,10,0,5"/>
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <TextBox Width="300" Watermark="Assembly path..." Text="{Binding AssemblyPath, Mode=TwoWay}"/>
+                <Button Content="Load Assembly" Command="{Binding LoadAssemblyCommand}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
+                <ComboBox Width="200"
+                          ItemsSource="{Binding ReflectedTypes}"
+                          SelectedItem="{Binding SelectedReflectedType}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FullName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <ComboBox.PlaceholderText>
+                        Select class
+                    </ComboBox.PlaceholderText>
+                </ComboBox>
+                <ComboBox Width="200"
+                          ItemsSource="{Binding ReflectedMethods}"
+                          SelectedItem="{Binding SelectedReflectedMethod}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <ComboBox.PlaceholderText>
+                        Select method
+                    </ComboBox.PlaceholderText>
+                </ComboBox>
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding ReflectedParameters}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <TextBlock Text="{Binding Name}" Width="100"/>
+                            <TextBox Width="150" Text="{Binding InputValue, Mode=TwoWay}"/>
+                            <TextBlock Text="{Binding TypeName}" Foreground="Gray"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="Выполнить" Command="{Binding ExecuteReflectedMethodCommand}" Margin="0,5,0,0"/>
+            <TextBlock Text="{Binding ReflectionResult}" Foreground="Blue" Margin="0,5,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
